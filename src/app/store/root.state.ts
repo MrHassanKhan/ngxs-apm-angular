@@ -1,10 +1,10 @@
 import { State } from '@ngxs/store';
 
-export class AppModel {
+export class AppStateModel {
 }
 
-@State<AppModel[]>({
+@State<AppStateModel>({
     name: 'app',
-    defaults: []
+    defaults: {}
   })
   export class AppState {}
