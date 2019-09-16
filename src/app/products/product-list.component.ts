@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, forkJoin, zip } from 'rxjs';
 
 import { Product } from './product';
 import { Select, Store } from '@ngxs/store';
@@ -20,7 +20,7 @@ export class ProductListComponent implements OnInit {
   // @Select(ProductState.supplierList) suppliers$: Observable<Supplier[]>;
   pageTitle = 'Product List';
   errorMessage = '';
-  productWithCategory$ = combineLatest([this.products$, this.categories$]).pipe(
+  productWithCategory$ = zip(this.products$, this.categories$).pipe(
     filter(([products, categories]) => (products.length !== 0 && categories.length !== 0)),
     map(([products, categories]) => products.map(product => ({
         ...product,
@@ -29,14 +29,20 @@ export class ProductListComponent implements OnInit {
         searchKey: [product.productName]
       }) as Product)
     ),
-    tap((products => console.log(products)))
+    // tap((products => console.log(products)))
   );
 
   productsWithCategoryWithAction$ = combineLatest([this.productWithCategory$, this.categoryId$]).pipe(
+    // tap(([products, cat]) => {
+    //   console.log('Before Filter');
+    //   console.log(products);
+    //   console.log(cat);
+    // }),
     map(([products, selectedCategoryId]) =>
       products.filter(product =>
         selectedCategoryId ? product.categoryId === selectedCategoryId : true
-      ))
+      )),
+      // tap((products => console.log(products)))
   );
   constructor(private store: Store) { }
 

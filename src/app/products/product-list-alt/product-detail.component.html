@@ -1,7 +1,7 @@
 <div class="card"
-     *ngIf="product">
+     *ngIf="product$ | async as product">
   <div class="card-header">
-    {{pageTitle}}
+    Product Details for {{product.productName}}
   </div>
 
   <div class="card-body">
@@ -33,7 +33,7 @@
 
     <div class="table-responsive">
       <table class="table mb-0"
-             *ngIf="productSuppliers">
+             *ngIf="productSuppliers$ | async as productSuppliers">
         <thead>
           <tr>
             <th>Supplier</th>

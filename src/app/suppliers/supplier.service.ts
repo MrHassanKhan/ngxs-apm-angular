@@ -20,6 +20,13 @@ export class SupplierService {
         catchError(this.handleError)
       );
   }
+  getSupplierbyId(Id: number): Observable<Supplier[]> {
+    return this.http.get<Supplier[]>(`${this.suppliersUrl}/${Id}`)
+      .pipe(
+        // tap(data => console.log('Products: ', JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
   private handleError(err: any) {
     // in a real world app, we may send the server to some remote logging infrastructure
     // instead of just logging it to the console

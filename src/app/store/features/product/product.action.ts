@@ -14,7 +14,7 @@ export class SeletCategory {
     static readonly type = '[Categories] Select CategoryId';
     constructor(public payload: {cateogryId: number}) {}
 }
-export class GetProductById {
-    static readonly type = '[Product] Get By Id';
+export class SetSelectedProduct {
+    static readonly type = '[Product] set Selected';
     constructor(public payload: { productId: number }) {}
 }

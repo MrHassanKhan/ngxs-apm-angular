@@ -1,19 +1,20 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { Product } from 'src/app/products/product';
-import { GetAllProducts, GetProductById, GetAllSuppliers, GetAllCategories, SeletCategory } from './product.action';
+import { GetAllProducts, SetSelectedProduct, GetAllSuppliers, GetAllCategories, SeletCategory } from './product.action';
 import { ProductService } from 'src/app/products/product.service';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, mergeMap, toArray } from 'rxjs/operators';
 import { Supplier } from 'src/app/suppliers/supplier';
 import { SupplierService } from 'src/app/suppliers/supplier.service';
 import { ProductCategory } from 'src/app/product-categories/product-category';
 import { ProductCategoryService } from 'src/app/product-categories/product-category.service';
+import { from, Observable } from 'rxjs';
 
 export interface ProductStateModel {
     products: Product[];
     categories: ProductCategory[];
     suppliers: Supplier[];
     selectedCategoryId: number;
-    product: Product;
+    selectedProduct: Product;
 }
 
 @State<ProductStateModel>({
@@ -23,7 +24,7 @@ export interface ProductStateModel {
         categories: [],
         suppliers: [],
         selectedCategoryId: 0,
-        product: null
+        selectedProduct: null
     }
 })
 export class ProductState {
@@ -49,7 +50,7 @@ export class ProductState {
 
     @Selector()
     static selectedProduct(state: ProductStateModel) {
-        return state.product;
+        return state.selectedProduct;
     }
 
 
@@ -89,10 +90,15 @@ export class ProductState {
             })
         );
     }
-    @Action(GetProductById)
-    getProductById(ctx: StateContext<ProductStateModel>, action: GetProductById) {
+    @Action(SetSelectedProduct)
+    async SetSelectedProductById(ctx: StateContext<ProductStateModel>, action: SetSelectedProduct) {
         // tslint:disable-next-line: no-shadowed-variable
         const prdt = ctx.getState().products.find(product => action.payload.productId === product.id);
-        ctx.patchState({product: prdt});
+        ctx.patchState({selectedProduct: prdt});
+        const suplliers: any = await from(prdt.supplierIds).pipe(
+            mergeMap(supplierId => this.suppliersService.getSupplierbyId(supplierId)),
+            toArray()
+        ).toPromise();
+        ctx.patchState({suppliers: suplliers});
     }
 }

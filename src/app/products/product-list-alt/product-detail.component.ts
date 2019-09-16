@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-
-import { ProductService } from '../product.service';
+import { Component, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
+import { ProductState } from 'src/app/store/features/product/product.state';
+import { Observable } from 'rxjs';
+import { Product } from '../product';
+import { Supplier } from 'src/app/suppliers/supplier';
 
 @Component({
   selector: 'pm-product-detail',
@@ -9,8 +12,8 @@ import { ProductService } from '../product.service';
 export class ProductDetailComponent {
   pageTitle = 'Product Detail';
   errorMessage = '';
-  product;
-
-  constructor(private productService: ProductService) { }
+  @Select(ProductState.selectedProduct) product$: Observable<Product>;
+  @Select(ProductState.supplierList) productSuppliers$: Observable<Supplier[]>;
+  constructor() { }
 
 }

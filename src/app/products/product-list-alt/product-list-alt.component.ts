@@ -3,8 +3,8 @@ import { Observable, combineLatest } from 'rxjs';
 import { Product } from '../product';
 import { ProductState } from 'src/app/store/features/product/product.state';
 import { Select, Store } from '@ngxs/store';
-import { GetAllProducts } from 'src/app/store/features/product/product.action';
-import { filter, map, tap } from 'rxjs/operators';
+import { GetAllProducts, SetSelectedProduct } from 'src/app/store/features/product/product.action';
+import { filter, map } from 'rxjs/operators';
 import { ProductCategory } from 'src/app/product-categories/product-category';
 
 @Component({
@@ -14,9 +14,9 @@ import { ProductCategory } from 'src/app/product-categories/product-category';
 export class ProductListAltComponent implements OnInit {
   @Select(ProductState.productList) products$: Observable<Product[]>;
   @Select(ProductState.categoryList) categories$: Observable<ProductCategory[]>;
+  @Select(ProductState.selectedProduct) selectedProduct$: Observable<ProductCategory[]>;
   pageTitle = 'Products';
   errorMessage = '';
-  selectedProductId;
 
   productWithCategory$ = combineLatest([this.products$, this.categories$]).pipe(
     filter(([products, categories]) => (products.length !== 0 && categories.length !== 0)),
@@ -27,7 +27,7 @@ export class ProductListAltComponent implements OnInit {
         searchKey: [product.productName]
       }) as Product)
     ),
-    tap((products => console.log(products)))
+    // tap((products => console.log(products)))
   );
   constructor(private store: Store) { }
   ngOnInit(): void {
@@ -35,6 +35,6 @@ export class ProductListAltComponent implements OnInit {
   }
 
   onSelected(productId: number): void {
-    console.log('Not yet implemented');
+    this.store.dispatch(new SetSelectedProduct({productId}));
   }
 }
